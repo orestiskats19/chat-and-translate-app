@@ -10,26 +10,38 @@ import Bubble from "./Bubble";
 function App() {
     const [textValue, setTextValue] = useState("Please add your text here")
     const [language, setLanguage] = useState("english-input")
-    const [messages, setMessages] = useState([
-    ])
+    const [messages, setMessages] = useState([])
 
     useEffect(() => {
-
+        fetch("/getMessages", {
+                method: "GET",
+                headers: {
+                    "content_type": "application/json",
+                    'Accept': 'application/json'
+                }
+            }
+        ).then(response => {
+            return response.json()
+        }).then(res => {
+            return res["messages"]
+        }).then(r => {
+            setMessages(JSON.parse((r.replace(/'/g,'"'))));
+        })
     }, []);
 
-    const result = (option, question) => {
+    const result = (option, text) => {
         fetch("/result", {
                 method: "POST",
                 cache: "no-cache",
                 headers: {
                     "content_type": "application/json",
                 },
-                body: JSON.stringify({"option": option, "question": question})
+                body: JSON.stringify({"option": option, "text": text, "direction": "random"})
             }
         ).then(response => {
             return response.text()
         }).then(json => setMessages([...messages, {
-            "direction": ['left','right'][ Math.floor(Math.random()*2)],
+            "direction": ['left', 'right'][Math.floor(Math.random() * 2)],
             "text": textValue,
             "translation": json,
             "sequence": 1
@@ -54,7 +66,7 @@ function App() {
                                 handleChange.bind(this);
                                 result(language, textValue)
                             }
-                        } }  onChange={handleChange.bind(this)} rows="3"/>
+                        }} onChange={handleChange.bind(this)} rows="3"/>
                     </Form.Group>
                 </Form>
                 <div className={"button"}>
@@ -75,11 +87,11 @@ function App() {
                 </div>
             </div>
             <div>
-            {messages.length > 0 ?
-                messages.map(message => {
-                    return <Bubble props={message}/>
-                })
-                : <></>}
+                {messages.length > 0 ?
+                    messages.map(message => {
+                        return <Bubble props={message}/>
+                    })
+                    : <></>}
             </div>
         </div>
 

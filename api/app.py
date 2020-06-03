@@ -1,34 +1,42 @@
-from flask import Flask, request, render_template
-from transformers import MarianMTModel,MarianTokenizer
-from api import model_english,model_spanish, tokenizer_english,tokenizer_spanish
+from flask import Flask, request
+from api import model_english, model_spanish, tokenizer_english, tokenizer_spanish, messages
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder='../frontend/build')
 CORS(app)
 
+MESSAGES_THRESHOLD = 50
+
+
+def store_message(message):
+    if len(messages) > MESSAGES_THRESHOLD:
+        messages.pop(0)
+    messages.append(message)
+
 
 @app.route('/result', methods=['POST'])
 def post_answer():
     json = request.json
-    print(json)
-    option = json["option"]
-    print(option)
-    text = json["question"]
-    if option == 'english-input':
+    message = {"option": json["option"], "direction": json["direction"], "text": json["text"]}
+    if message["option"] == 'english-input':
         tgt_language = "es"
-        text_english = f'>>{tgt_language}<< {text}'
-        print(text_english)
+        text_english = f'>>{tgt_language}<< {message["text"]}'
         translated = model_english.generate(**tokenizer_english.prepare_translation_batch([text_english]))
-        return [tokenizer_english.decode(t, skip_special_tokens=True) for t in translated][0]
+        message["translation"] = [tokenizer_english.decode(t, skip_special_tokens=True) for t in translated][0]
+        store_message(message)
+        return message["translation"]
 
     else:
         tgt_language = "en"
-        text_english = f'>>{tgt_language}<< {text}'
+        text_english = f'>>{tgt_language}<< {message["text"]}'
         translated = model_spanish.generate(**tokenizer_spanish.prepare_translation_batch([text_english]))
-        return [tokenizer_spanish.decode(t, skip_special_tokens=True) for t in translated][0]
+        message["translation"] = [tokenizer_spanish.decode(t, skip_special_tokens=True) for t in translated][0]
+        return message["translation"]
 
-    return None
 
+@app.route('/getMessages', methods=['GET'])
+def get_messages():
+    return {"messages": str(messages)}
 
 
 if __name__ == '__main__':

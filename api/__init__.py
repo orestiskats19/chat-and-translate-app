@@ -7,3 +7,5 @@ model_english = MarianMTModel.from_pretrained(model_name_english)
 model_name_spanish = 'Helsinki-NLP/opus-mt-aed-es'
 tokenizer_spanish = MarianTokenizer.from_pretrained(model_name_spanish)
 model_spanish = MarianMTModel.from_pretrained(model_name_spanish)
+
+messages = []
