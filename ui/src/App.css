@@ -1,0 +1,52 @@
+.App {
+  text-align: center;
+  margin: 5%;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+
+.container{
+  /*margin: 10px;*/
+  background: lightblue;
+  display: flex;
+  flex-direction: row;
+  height: 90px;
+}
+.button{
+  width: 10%;
+  height: 70px;
+  padding-top: 10px;
+}
+.dropdown{
+  width: 15%;
+  padding: 5px 0px 15px 5px;
+  display: flex;
+  justify-content: center;
+}
+.form{
+  padding-right: 5px;
+  padding-top: 2px;
+  width: 75%;
+}
+.textarea{
+  resize: none;
+}

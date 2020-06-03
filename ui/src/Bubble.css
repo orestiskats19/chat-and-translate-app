@@ -1,0 +1,74 @@
+@font-face {
+    font-family: 'SequentialistBB';
+    src: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/4273/306FA6_1_0.woff2') format('woff2'),
+    url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/4273/306FA6_0_0.woff') format('woff');
+    font-style: normal;
+    font-weight: 400;
+}
+@font-face {
+    font-family: 'SequentialistBB';
+    src: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/4273/306FA6_0_0.woff2') format('woff2'),
+    url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/4273/306FA6_0_0.woff') format('woff');
+    font-style: italic;
+    font-weight: 400;
+}
+* {
+    box-sizing: border-box;
+}
+body {
+    font-family: SequentialistBB, cursive;
+    font-size: 2.5vw;
+    margin: 0;
+}
+li {
+    border: 1px solid black;
+    list-style-type: none;
+    margin: 2px 0;
+    padding: 2px 5px;
+}
+.him {
+    float: left;
+    /*display: flex;*/
+    /*justify-content: flex-start;*/
+    border-radius: 0 10px 10px 0;
+    clear: both;
+    font-size: 1.5vw;
+    max-width: 70%;
+    background: honeydew;
+    /*margin-left: 5%;*/
+
+}
+.me {
+    float: right;
+    display: flex;
+    justify-content: flex-end;
+    border-radius: 10px 0 0 10px;
+    clear: both;
+    font-size: 1.5vw;
+    max-width: 70%;
+    background: bisque;
+    /*margin-right: 5%;*/
+}
+
+.him.start {
+    border-top-left-radius: 10px;
+}
+.him.end {
+    border-bottom-left-radius: 10px;
+}
+.me.start {
+    border-top-right-radius: 10px;
+}
+.me.end {
+    border-bottom-right-radius: 10px;
+}
+
+.line{
+    border-bottom: 0.5px solid black;
+}
+
+.container1{
+    margin-left: 5%;
+    margin-right: 5%;
+
+}
