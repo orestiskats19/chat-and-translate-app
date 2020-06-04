@@ -9,3 +9,5 @@ tokenizer_spanish = MarianTokenizer.from_pretrained(model_name_spanish)
 model_spanish = MarianMTModel.from_pretrained(model_name_spanish)
 
 messages = []
+
+cookies =[]

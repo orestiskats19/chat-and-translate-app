@@ -11,23 +11,71 @@ function App() {
     const [textValue, setTextValue] = useState("Please add your text here")
     const [language, setLanguage] = useState("english-input")
     const [messages, setMessages] = useState([])
+    const [cookie, setCookie] = useState("")
+    const [authorized, setAuthorized] = useState(false)
 
     useEffect(() => {
-        fetch("/getMessages", {
-                method: "GET",
+        checkLocalStorage()
+        const interval = setInterval(() => {
+            fetch("/getMessages", {
+                    method: "GET",
+                    headers: {
+                        "content_type": "application/json",
+                        'Accept': 'application/json'
+                    }
+                }
+            ).then(response => {
+                return response.json()
+            }).then(res => {
+                return res["messages"]
+            }).then(r => {
+                setMessages(JSON.parse((r.replace(/'/g, '"'))));
+            })        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
+
+
+    const storeUserInServer = () => {
+        fetch("/postCookie", {
+                method: "POST",
+                cache: "no-cache",
                 headers: {
                     "content_type": "application/json",
-                    'Accept': 'application/json'
+                }
+            }
+        ).then(r => {
+            return r.json()
+        }).then(res => {
+            window.localStorage.setItem("hugging-translator-cookie", res["cookie"])
+            setAuthorized(true)
+        })
+
+    }
+
+    const checkLocalStorage = () => {
+        fetch("/getCookies", {
+                method: "GET",
+                headers: {
+                    "content_type": "application/json"
                 }
             }
         ).then(response => {
             return response.json()
         }).then(res => {
-            return res["messages"]
+            return res["cookies"]
         }).then(r => {
-            setMessages(JSON.parse((r.replace(/'/g,'"'))));
+            const cooks = r.substring(1, r.length - 1).replace(/ '/g, '').replace(/'/g, '').split(',')
+            if (cooks.includes(window.localStorage.getItem("hugging-translator-cookie"))) {
+                setAuthorized(true)
+            } else {
+                if (cooks < 4) {
+                    storeUserInServer()
+                }
+            }
         })
-    }, []);
+
+    }
+
 
     const result = (option, text) => {
         fetch("/result", {
@@ -36,12 +84,16 @@ function App() {
                 headers: {
                     "content_type": "application/json",
                 },
-                body: JSON.stringify({"option": option, "text": text, "direction": "random"})
+                body: JSON.stringify({
+                    "option": option,
+                    "text": text,
+                    "direction": window.localStorage.getItem("hugging-translator-cookie")
+                })
             }
         ).then(response => {
             return response.text()
         }).then(json => setMessages([...messages, {
-            "direction": ['left', 'right'][Math.floor(Math.random() * 2)],
+            "direction": window.localStorage.getItem("hugging-translator-cookie"),
             "text": textValue,
             "translation": json,
             "sequence": 1
@@ -56,45 +108,47 @@ function App() {
     }
 
     return (
-        <div className="App">
-            <div>Welcome to the Hugging Chat translator</div>
-            <div className={"container"}>
-                <Form className={"form"}>
-                    <Form.Group controlId="exampleForm.ControlTextarea1">
-                        <Form.Control className={"textarea"} as="textarea" onKeyPress={event => {
-                            if (event.key === "Enter") {
-                                handleChange.bind(this);
-                                result(language, textValue)
-                            }
-                        }} onChange={handleChange.bind(this)} rows="3"/>
-                    </Form.Group>
-                </Form>
-                <div className={"button"}>
-                    <Button variant="success" onClick={() => result(language, textValue)}>Send & translate</Button>
+        [authorized ?
+            <div className="App">
+                <div>Welcome to the Hugging Chat translator</div>
+                <div className={"container"}>
+                    <Form className={"form"}>
+                        <Form.Group controlId="exampleForm.ControlTextarea1">
+                            <Form.Control className={"textarea"} as="textarea" onKeyPress={event => {
+                                if (event.key === "Enter") {
+                                    handleChange.bind(this);
+                                    result(language, textValue)
+                                }
+                            }} onChange={handleChange.bind(this)} rows="3"/>
+                        </Form.Group>
+                    </Form>
+                    <div className={"button"}>
+                        <Button variant="success" onClick={() => result(language, textValue)}>Send &
+                            translate</Button>
+                    </div>
+                    <div className={"dropdown"}>
+                        <Dropdown className={"dropdown"}>
+                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                                {languageTranslation(language)}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => setLanguage("english-input")}>English to
+                                    Spanish</Dropdown.Item>
+                                <Dropdown.Item onClick={() => setLanguage("spanish-input")}>Spanish to
+                                    English</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </div>
                 </div>
-                <div className={"dropdown"}>
-                    <Dropdown className={"dropdown"}>
-                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                            {languageTranslation(language)}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => setLanguage("english-input")}>English to
-                                Spanish</Dropdown.Item>
-                            <Dropdown.Item onClick={() => setLanguage("spanish-input")}>Spanish to
-                                English</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
+                <div>
+                    {messages.length > 0 ?
+                        messages.map(message => {
+                            return <Bubble props={message}/>
+                        })
+                        : <></>}
                 </div>
             </div>
-            <div>
-                {messages.length > 0 ?
-                    messages.map(message => {
-                        return <Bubble props={message}/>
-                    })
-                    : <></>}
-            </div>
-        </div>
-
+            : <> Sorry. You are not authorized to access this website at the moment </>]
     );
 }
 

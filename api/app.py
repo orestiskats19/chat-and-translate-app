@@ -1,7 +1,7 @@
 from flask import Flask, request
-from api import model_english, model_spanish, tokenizer_english, tokenizer_spanish, messages
+from api import model_english, model_spanish, tokenizer_english, tokenizer_spanish, messages, cookies
 from flask_cors import CORS
-
+import random
 app = Flask(__name__, static_folder='../frontend/build')
 CORS(app)
 
@@ -37,6 +37,18 @@ def post_answer():
 @app.route('/getMessages', methods=['GET'])
 def get_messages():
     return {"messages": str(messages)}
+
+
+@app.route('/postCookie', methods=['POST'])
+def post_cookie():
+    n = random.choice(["1","2","3"])
+    cookies.append(n)
+    return {"cookie": n}
+
+
+@app.route('/getCookies', methods=['GET'])
+def get_stored_cookies():
+    return {"cookies": str(cookies)}
 
 
 if __name__ == '__main__':
