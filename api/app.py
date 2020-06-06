@@ -13,13 +13,19 @@ def store_message(message):
         messages.pop(0)
     messages.append(message)
 
+langauages = {
+    "model": "",
+    "from": "",
+    "to": "",
+}
+
 
 @app.route('/result', methods=['POST'])
 def post_answer():
     json = request.json
     message = {"option": json["option"], "direction": json["direction"], "text": json["text"]}
     if message["option"] == 'english-input':
-        tgt_language = "es"
+        tgt_language = "de"
         text_english = f'>>{tgt_language}<< {message["text"]}'
         translated = model_english.generate(**tokenizer_english.prepare_translation_batch([text_english]))
         message["translation"] = [tokenizer_english.decode(t, skip_special_tokens=True) for t in translated][0]

@@ -29,6 +29,7 @@ function App() {
             }).then(res => {
                 return res["messages"]
             }).then(r => {
+                console.log(r)
                 setMessages(JSON.parse((r.replace(/'/g, '"'))));
             })        }, 5000);
         return () => clearInterval(interval);
@@ -68,9 +69,9 @@ function App() {
             if (cooks.includes(window.localStorage.getItem("hugging-translator-cookie"))) {
                 setAuthorized(true)
             } else {
-                if (cooks < 4) {
+                // if (cooks < 4) {
                     storeUserInServer()
-                }
+                // }
             }
         })
 
@@ -110,8 +111,16 @@ function App() {
     return (
         [authorized ?
             <div className="App">
-                <div>Welcome to the Hugging Chat translator</div>
+                {/*<div>Welcome to the Hugging Chat translator</div>*/}
                 <div className={"container"}>
+                    <div className={"messages-container"}>
+                        {messages.length > 0 ?
+                            messages.map(message => {
+                                return <Bubble props={message}/>
+                            })
+                            : <></>}
+                    </div>
+                    <div className={"text-area-container"}>
                     <Form className={"form"}>
                         <Form.Group controlId="exampleForm.ControlTextarea1">
                             <Form.Control className={"textarea"} as="textarea" onKeyPress={event => {
@@ -139,14 +148,11 @@ function App() {
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
+                    </div>
                 </div>
-                <div>
-                    {messages.length > 0 ?
-                        messages.map(message => {
-                            return <Bubble props={message}/>
-                        })
-                        : <></>}
-                </div>
+                {/*<div className={"test"}>*/}
+
+                {/*</div>*/}
             </div>
             : <> Sorry. You are not authorized to access this website at the moment </>]
     );
