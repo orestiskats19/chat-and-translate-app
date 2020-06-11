@@ -1,0 +1,32 @@
+{
+  "english-to-spanish": {
+    "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
+    "target_language": "es",
+    "name": "English To Spanish"
+  },
+  "english-to-french": {
+    "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
+    "target_language": "fr",
+    "name": "English To French"
+  },
+  "english-to-italian": {
+    "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
+    "target_language": "it",
+    "name": "English To Italian"
+  },
+  "english-to-portuguese": {
+    "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
+    "target_language": "pt",
+    "name": "English To Portuguese"
+  },
+  "danish-to-swedish": {
+    "model": "Helsinki-NLP/opus-mt-SCANDINAVIA-SCANDINAVIA",
+    "target_language": "sv",
+    "name": "Danish To Swedish"
+  },
+  "swedish-to-danish": {
+    "model": "Helsinki-NLP/opus-mt-SCANDINAVIA-SCANDINAVIA",
+    "target_language": "da",
+    "name": "Swedish to Danish"
+  }
+}

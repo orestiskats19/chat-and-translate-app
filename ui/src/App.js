@@ -1,15 +1,16 @@
 import React, {useState, useEffect} from 'react';
 import './App.css';
 import Dropdown from "react-bootstrap/Dropdown";
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Bubble from "./Bubble";
+import supported_languages from './recourses/supported_languages.json'
+
 
 function App() {
-    const [textValue, setTextValue] = useState("Please add your text here")
-    const [language, setLanguage] = useState("english-input")
+    const [textValue, setTextValue] = useState("")
+    const [language, setLanguage] = useState("english-to-spanish")
     const [messages, setMessages] = useState([])
     const [cookie, setCookie] = useState("")
     const [authorized, setAuthorized] = useState(false)
@@ -27,11 +28,10 @@ function App() {
             ).then(response => {
                 return response.json()
             }).then(res => {
-                return res["messages"]
-            }).then(r => {
-                console.log(r)
-                setMessages(JSON.parse((r.replace(/'/g, '"'))));
-            })        }, 5000);
+                setMessages(res["messages"])
+                scrollToBottom()
+            })
+        }, 5000);
         return () => clearInterval(interval);
     }, []);
 
@@ -70,13 +70,17 @@ function App() {
                 setAuthorized(true)
             } else {
                 // if (cooks < 4) {
-                    storeUserInServer()
+                storeUserInServer()
                 // }
             }
         })
 
     }
 
+    const scrollToBottom = async () => {
+        const scrollingElement = (document.scrollingElement || document.body);
+        scrollingElement.scrollTop = scrollingElement.scrollHeight;
+    }
 
     const result = (option, text) => {
         fetch("/result", {
@@ -104,15 +108,21 @@ function App() {
     const handleChange = (event) => {
         setTextValue(event.target.value)
     }
+
     const languageTranslation = (lang) => {
-        return {"english-input": "English to Spanish", "spanish-input": "Spanish to English"}[lang]
+        return supported_languages[lang]["name"]
+
+    }
+    const sendMessage = async () => {
+        await result(language, textValue)
+        await scrollToBottom()
+        setTextValue("")
     }
 
     return (
         [authorized ?
             <div className="App">
-                {/*<div>Welcome to the Hugging Chat translator</div>*/}
-                <div className={"container"}>
+                <div className={"container123"}>
                     <div className={"messages-container"}>
                         {messages.length > 0 ?
                             messages.map(message => {
@@ -120,42 +130,65 @@ function App() {
                             })
                             : <></>}
                     </div>
+
                     <div className={"text-area-container"}>
-                    <Form className={"form"}>
-                        <Form.Group controlId="exampleForm.ControlTextarea1">
-                            <Form.Control className={"textarea"} as="textarea" onKeyPress={event => {
-                                if (event.key === "Enter") {
-                                    handleChange.bind(this);
-                                    result(language, textValue)
-                                }
-                            }} onChange={handleChange.bind(this)} rows="3"/>
-                        </Form.Group>
-                    </Form>
-                    <div className={"button"}>
-                        <Button variant="success" onClick={() => result(language, textValue)}>Send &
-                            translate</Button>
-                    </div>
-                    <div className={"dropdown"}>
-                        <Dropdown className={"dropdown"}>
-                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                                {languageTranslation(language)}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => setLanguage("english-input")}>English to
-                                    Spanish</Dropdown.Item>
-                                <Dropdown.Item onClick={() => setLanguage("spanish-input")}>Spanish to
-                                    English</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </div>
+                        <Form className={"form"}>
+                            <Form.Group controlId="exampleForm.ControlTextarea1">
+                                <Form.Control value={textValue} className={"textarea"} as="textarea"
+                                              onKeyPress={async event => {
+                                                  if (event.key === "Enter") {
+                                                      handleChange.bind(this);
+                                                      await sendMessage()
+                                                  }
+                                              }} onChange={handleChange.bind(this)} rows="3"/>
+                            </Form.Group>
+                        </Form>
+                        <div className={"button"}>
+                            <Button variant="success" onClick={async () => {
+                                await sendMessage()
+                            }}>Send &
+                                translate</Button>
+                        </div>
+                        <div className={"dropdown"}>
+                            <Dropdown className={"dropdown"}>
+                                <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                                    {languageTranslation(language)}
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    {Object.keys(supported_languages).map((supported_language) => {
+                                        return <Dropdown.Item onClick={() => setLanguage(supported_language)}>
+                                            {supported_languages[supported_language]["name"]}
+                                        </Dropdown.Item>
+                                    })}
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </div>
                     </div>
                 </div>
-                {/*<div className={"test"}>*/}
-
-                {/*</div>*/}
             </div>
             : <> Sorry. You are not authorized to access this website at the moment </>]
     );
 }
 
 export default App;
+
+//  "german-to-dutch": {
+//    "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
+//    "target_language": "es",
+//    "name": "English To Spanish"
+//  },
+//  "dutch-to-german": {
+//    "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
+//    "target_language": "es",
+//    "name": "English To Spanish"
+//  },
+//  "german-to-danish": {
+//    "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
+//    "target_language": "es",
+//    "name": "English To Spanish"
+//  },
+//  "danish-to-german": {
+//    "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
+//    "target_language": "es",
+//    "name": "English To Spanish"
+//  },
