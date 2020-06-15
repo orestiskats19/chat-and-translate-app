@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Bubble from "./Bubble";
-import supported_languages from '../../supported_languages.json'
+import supported_languages from './recourses/supported_languages.json'
 
 
 function App() {
