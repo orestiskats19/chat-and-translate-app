@@ -1,27 +1,6 @@
 .App {
   text-align: center;
   margin: 5%;
-
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
 }
 
 .text-area-container{
@@ -29,7 +8,7 @@
   flex-direction: row;
   background: lightblue;
   width: 100%;
-  height: 110px;
+  height: 140px;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -38,38 +17,65 @@
 .messages-container{
   display: flex;
   flex-direction: column;
-  margin-bottom: 65px;
-
+  margin-bottom: 90px;
 }
 
-.container123{
+.app-container{
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.button{
-  padding: 1%;
-  width: 9%;
+@media screen and (max-width: 1024px) {
+  .buttons{
+    display: flex;
+    flex-direction: column;
+  }
 }
+
+.buttons{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 45px;
+}
+
+.button{
+
+}
+
 .dropdown{
   width: fit-content;
   padding-left: 1%;
-  padding-top: 0.2%;
-  /*padding: 5px 0px 15px 5px;*/
-  /*display: flex;*/
-  /*justify-content: center;*/
+  padding-right: 1%;
 }
+
 .form{
-  padding: 1%;
-  width: 74%;
+  padding: 0 1%;
+  width: auto;
 }
+
 .textarea{
   resize: none;
 }
 
-.test{
-  /*max-height: 800px;*/
-  /*overflow: scroll;*/
+.predicted-tokens{
+  padding: 0.5%;
+  outline: none;
+  box-shadow: none;
+}
+
+.input-and-next-tokens{
+  display: flex;
+  flex-direction: column;
+  width: 74%;
+}
+
+.token-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  font-size: 15px;
+  height: 45px;
 }

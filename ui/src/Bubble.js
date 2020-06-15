@@ -6,17 +6,17 @@ function Bubble(message) {
 
     return <>
         <div className={"http://localhost:3000/"}>
-            <li className={message.props.direction === "3" ? "me":"him"}>
+            <li className={message.props.direction === "master" ? "me" : "him"}>
                 <div className={"test"}>
                     <div className={"line"}>{message.props.text}</div>
                     <div className={"translation"}>
                         {message.props.translation}
-                        <Flag code="por" height="16" />
+                        <Flag code="por" height="16"/>
                     </div>
                 </div>
             </li>
-    </div>
-        </>
+        </div>
+    </>
 }
 
 export default Bubble;

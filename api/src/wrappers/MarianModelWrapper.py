@@ -15,3 +15,7 @@ class MarianModelWrapper:
     def __load_model(self):
         return MarianMTModel.from_pretrained(self.model_name)
 
+    def translator(self, text):
+        encoded_translation = self.model.generate(**self.tokenizer.prepare_translation_batch(text))
+        return [self.tokenizer.decode(t, skip_special_tokens=True) for t in encoded_translation][0]
+

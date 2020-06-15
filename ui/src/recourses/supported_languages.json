@@ -2,36 +2,31 @@
   "english-to-spanish": {
     "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
     "target_language": "es",
-    "name": "English To Spanish"
+    "name": "English to Spanish"
   },
   "english-to-french": {
     "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
     "target_language": "es",
-    "name": "English To French"
+    "name": "English to French"
   },
   "english-to-italian": {
     "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
     "target_language": "es",
-    "name": "English To Italian"
+    "name": "English to Italian"
   },
   "english-to-portuguese": {
     "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
     "target_language": "es",
-    "name": "English To Portuguese"
+    "name": "English to Portuguese"
   },
   "danish-to-swedish": {
     "model": "Helsinki-NLP/opus-mt-SCANDINAVIA-SCANDINAVIA",
     "target_language": "sv",
-    "name": "Danish To Swedish"
+    "name": "Danish to Swedish"
   },
   "swedish-to-danish": {
     "model": "Helsinki-NLP/opus-mt-SCANDINAVIA-SCANDINAVIA",
     "target_language": "da",
     "name": "Swedish to Danish"
-  },
-  "german-to-english": {
-    "model": "Helsinki-NLP/opus-mt-de-en",
-    "target_language": "en",
-    "name": "german-to-english"
   }
 }

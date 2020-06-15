@@ -12,11 +12,12 @@ function App() {
     const [textValue, setTextValue] = useState("")
     const [language, setLanguage] = useState("english-to-spanish")
     const [messages, setMessages] = useState([])
-    const [cookie, setCookie] = useState("")
     const [authorized, setAuthorized] = useState(false)
+    const [role, setRole] = useState("")
+    const [predictedTokens, setPredictedTokens] = useState([])
 
     useEffect(() => {
-        checkLocalStorage()
+        getUserRole()
         const interval = setInterval(() => {
             fetch("/getMessages", {
                     method: "GET",
@@ -31,29 +32,37 @@ function App() {
                 setMessages(res["messages"])
                 scrollToBottom()
             })
-        }, 5000);
+        }, 3000);
         return () => clearInterval(interval);
     }, []);
 
-
-    const storeUserInServer = () => {
-        fetch("/postCookie", {
+    const getUserRole = () => {
+        fetch("/postCookies", {
                 method: "POST",
-                cache: "no-cache",
                 headers: {
                     "content_type": "application/json",
-                }
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                "cookie": window.localStorage.getItem('hugging-chat-translator')
+            })
             }
-        ).then(r => {
-            return r.json()
+        ).then(response => {
+            return response.json()
         }).then(res => {
-            window.localStorage.setItem("hugging-translator-cookie", res["cookie"])
-            setAuthorized(true)
+            return res["cookies"]
+        }).then(res => {
+            if (res['role'] !== "") {
+                setRole(res["role"])
+                window.localStorage.setItem('hugging-chat-translator', res["cookie"])
+                setAuthorized(true)
+            } else {
+                setAuthorized(false)
+            }
         })
-
     }
 
-    const checkLocalStorage = () => {
+    const postCookie = () => {
         fetch("/getCookies", {
                 method: "GET",
                 headers: {
@@ -64,22 +73,37 @@ function App() {
             return response.json()
         }).then(res => {
             return res["cookies"]
-        }).then(r => {
-            const cooks = r.substring(1, r.length - 1).replace(/ '/g, '').replace(/'/g, '').split(',')
-            if (cooks.includes(window.localStorage.getItem("hugging-translator-cookie"))) {
+        }).then(res => {
+            if (res !== "") {
+                setRole(res)
                 setAuthorized(true)
             } else {
-                // if (cooks < 4) {
-                storeUserInServer()
-                // }
+                setAuthorized(true)
             }
         })
-
     }
 
     const scrollToBottom = async () => {
         const scrollingElement = (document.scrollingElement || document.body);
         scrollingElement.scrollTop = scrollingElement.scrollHeight;
+    }
+
+    const nextWordPredictor = (text) => {
+        fetch("/next_word_predictor", {
+                method: "POST",
+                cache: "no-cache",
+                headers: {
+                    "content_type": "application/json",
+                },
+                body: JSON.stringify({
+                    "text": text,
+                })
+            }
+        ).then(response => {
+            return response.json()
+        }).then(res => {
+            return res["tokens"]
+        }).then(res => setPredictedTokens([res]))
     }
 
     const result = (option, text) => {
@@ -92,37 +116,39 @@ function App() {
                 body: JSON.stringify({
                     "option": option,
                     "text": text,
-                    "direction": window.localStorage.getItem("hugging-translator-cookie")
+                    "direction": role
                 })
             }
         ).then(response => {
-            return response.text()
+            return response["translation"]
         }).then(json => setMessages([...messages, {
-            "direction": window.localStorage.getItem("hugging-translator-cookie"),
+            "direction": role,
             "text": textValue,
             "translation": json,
-            "sequence": 1
         }]))
     }
 
     const handleChange = (event) => {
         setTextValue(event.target.value)
+        nextWordPredictor(textValue)
     }
 
     const languageTranslation = (lang) => {
         return supported_languages[lang]["name"]
-
     }
+
     const sendMessage = async () => {
-        await result(language, textValue)
-        await scrollToBottom()
-        setTextValue("")
+        if (textValue !== "") {
+            await result(language, textValue)
+            await scrollToBottom()
+            setTextValue("")
+        }
     }
 
     return (
         [authorized ?
             <div className="App">
-                <div className={"container123"}>
+                <div className={"app-container"}>
                     <div className={"messages-container"}>
                         {messages.length > 0 ?
                             messages.map(message => {
@@ -130,65 +156,56 @@ function App() {
                             })
                             : <></>}
                     </div>
-
                     <div className={"text-area-container"}>
-                        <Form className={"form"}>
-                            <Form.Group controlId="exampleForm.ControlTextarea1">
-                                <Form.Control value={textValue} className={"textarea"} as="textarea"
-                                              onKeyPress={async event => {
-                                                  if (event.key === "Enter") {
-                                                      handleChange.bind(this);
-                                                      await sendMessage()
-                                                  }
-                                              }} onChange={handleChange.bind(this)} rows="3"/>
-                            </Form.Group>
-                        </Form>
-                        <div className={"button"}>
-                            <Button variant="success" onClick={async () => {
-                                await sendMessage()
-                            }}>Send &
-                                translate</Button>
+                        <div className={"input-and-next-tokens"}>
+                            <div className={"token-container"}>{predictedTokens.map(tokens => {
+                                return tokens.map(token => {
+                                    return <div className={"predicted-tokens"}>
+                                        <Button variant={"secondary"} size="sm" onClick={()=>{
+                                            setTextValue(textValue + token)
+                                            nextWordPredictor(textValue)
+                                        }}>{token}</Button></div>
+                                })
+                            })}</div>
+                            <Form className={"form"}>
+                                <Form.Group controlId="exampleForm.ControlTextarea1">
+                                    <Form.Control value={textValue} className={"textarea"} as="textarea"
+                                                  onKeyPress={async event => {
+                                                      if (event.key === "Enter") {
+                                                          event.preventDefault();
+                                                          await sendMessage()
+                                                      }
+                                                  }} onChange={handleChange.bind(this)} rows="3"/>
+                                </Form.Group>
+                            </Form>
                         </div>
-                        <div className={"dropdown"}>
-                            <Dropdown className={"dropdown"}>
-                                <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                                    {languageTranslation(language)}
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                    {Object.keys(supported_languages).map((supported_language) => {
-                                        return <Dropdown.Item onClick={() => setLanguage(supported_language)}>
-                                            {supported_languages[supported_language]["name"]}
-                                        </Dropdown.Item>
-                                    })}
-                                </Dropdown.Menu>
-                            </Dropdown>
+                        <div className={"buttons"}>
+                            <div className={"button"}>
+                                <Button variant="success" onClick={async () => {
+                                    await sendMessage()
+                                }}>Send &
+                                    translate</Button>
+                            </div>
+                            <div className={"dropdown"}>
+                                <Dropdown className={"dropdown"}>
+                                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                                        {languageTranslation(language)}
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                        {Object.keys(supported_languages).map((supported_language) => {
+                                            return <Dropdown.Item onClick={() => setLanguage(supported_language)}>
+                                                {supported_languages[supported_language]["name"]}
+                                            </Dropdown.Item>
+                                        })}
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            : <> Sorry. You are not authorized to access this website at the moment </>]
+            : <> Sorry, you are not authorized to access this website at the moment. </>]
     );
 }
 
 export default App;
-
-//  "german-to-dutch": {
-//    "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
-//    "target_language": "es",
-//    "name": "English To Spanish"
-//  },
-//  "dutch-to-german": {
-//    "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
-//    "target_language": "es",
-//    "name": "English To Spanish"
-//  },
-//  "german-to-danish": {
-//    "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
-//    "target_language": "es",
-//    "name": "English To Spanish"
-//  },
-//  "danish-to-german": {
-//    "model": "Helsinki-NLP/opus-mt-en-ROMANCE",
-//    "target_language": "es",
-//    "name": "English To Spanish"
-//  },
