@@ -5,7 +5,7 @@ and suggest the next word when the user is typing a message. The current support
 can be found in `supported_languages.json` file.
 
 
-### How does the translation work ?
+### How does the translation work?
 
 The app uses the MarianMT model https://huggingface.co/transformers/model_doc/marian.html
 from Hugging Face and pretrained weights from Helsinki-NLP https://huggingface.co/Helsinki-NLP`
@@ -33,7 +33,8 @@ from Hugging face that has been developed by OpenAI.
 ### How can I run it?
 
 #### API
-First you need to install all the required libraries. Get inside the api folder and type:
+First you need to have python installed in your machine and then to download the required libraries. 
+To download the libraries get inside the api folder and type:
 ```
 pip install -r requirements.txt
 ```
@@ -42,7 +43,8 @@ And then start the app:
 python -m src.app
 ```
 #### UI
-Similarly here you need first to get the ui folder and install the required libraries. In order to do that type:
+Similarly, you need to have nodejs installed and 
+then to get inside the ui folder and download the required libraries. In order to do that type:
 ```
 npm install
 ```
@@ -55,4 +57,4 @@ Now you just go to the http://localhost:3000 and enjoy :)
 
 ### What is next ?
 
-- Authentication of the user
+- TBC
