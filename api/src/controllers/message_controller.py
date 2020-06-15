@@ -21,7 +21,7 @@ def get_model_wrapper(incoming_translation):
             return model_wrapper
 
 
-@app.route('/result', methods=['POST'])
+@app.route('/translate', methods=['POST'])
 def post_answer():
     json = request.json
     message = {"option": json["option"], "direction": json["direction"], "text": json["text"]}

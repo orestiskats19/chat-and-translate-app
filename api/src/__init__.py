@@ -12,10 +12,12 @@ CORS(app)
 next_token_model_wrapper = GPT2ModelWrapper(GPT2LMHeadModel, GPT2Tokenizer, 'gpt2')
 
 supported_languages = get_supported_languages()
-pretrained_weights = get_pretrained_weights(supported_languages)
+pretrained_weights_for_supported_langs = get_pretrained_weights(supported_languages)
 
-translation_model_wrappers = [MarianModelWrapper(MarianMTModel, MarianTokenizer, model, pretrained_weights[model]) for
-                              model in pretrained_weights.keys()]
+translation_model_wrappers = [MarianModelWrapper(MarianMTModel, MarianTokenizer,
+                                                 pretrained_weights,
+                                                 pretrained_weights_for_supported_langs[pretrained_weights])
+                              for pretrained_weights in pretrained_weights_for_supported_langs.keys()]
 
 messages = []
 

@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Bubble from "./Bubble";
-import supported_languages from './recourses/supported_languages.json'
+import supported_languages from '../../supported_languages.json'
 
 
 function App() {
@@ -62,27 +62,6 @@ function App() {
         })
     }
 
-    const postCookie = () => {
-        fetch("/getCookies", {
-                method: "GET",
-                headers: {
-                    "content_type": "application/json"
-                }
-            }
-        ).then(response => {
-            return response.json()
-        }).then(res => {
-            return res["cookies"]
-        }).then(res => {
-            if (res !== "") {
-                setRole(res)
-                setAuthorized(true)
-            } else {
-                setAuthorized(true)
-            }
-        })
-    }
-
     const scrollToBottom = async () => {
         const scrollingElement = (document.scrollingElement || document.body);
         scrollingElement.scrollTop = scrollingElement.scrollHeight;
@@ -107,7 +86,7 @@ function App() {
     }
 
     const result = (option, text) => {
-        fetch("/result", {
+        fetch("/translate", {
                 method: "POST",
                 cache: "no-cache",
                 headers: {
