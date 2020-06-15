@@ -1,13 +1,21 @@
 from ..src.wrappers.MarianModelWrapper import MarianModelWrapper
 from ..src.wrappers.GPT2ModelWrapper import GPT2ModelWrapper
-from ..src.utils.utils import get_supported_languages,get_models
+from ..src.utils.utils import get_supported_languages, get_pretrained_weights
+from transformers import MarianMTModel, MarianTokenizer
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
+from flask import Flask
+from flask_cors import CORS
 
-next_token_model_wrapper = GPT2ModelWrapper('gpt2')
+app = Flask(__name__, static_folder='../frontend/build')
+CORS(app)
+
+next_token_model_wrapper = GPT2ModelWrapper(GPT2LMHeadModel, GPT2Tokenizer, 'gpt2')
 
 supported_languages = get_supported_languages()
-models = get_models(supported_languages)
+pretrained_weights = get_pretrained_weights(supported_languages)
 
-translation_model_wrappers = [MarianModelWrapper(model, models[model]) for model in models.keys()]
+translation_model_wrappers = [MarianModelWrapper(MarianMTModel, MarianTokenizer, model, pretrained_weights[model]) for
+                              model in pretrained_weights.keys()]
 
 messages = []
 

@@ -11,7 +11,7 @@ def get_supported_languages():
             return data
 
 
-def get_models(supported_languages):
+def get_pretrained_weights(supported_languages):
     model = {}
     for lang in supported_languages.keys():
         if supported_languages[lang]["model"] in model.keys():

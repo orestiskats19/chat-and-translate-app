@@ -1,19 +1,11 @@
-from transformers import MarianMTModel, MarianTokenizer
+from api.src.wrappers.ModelWrapper import ModelWrapper
 
 
-class MarianModelWrapper:
+class MarianModelWrapper(ModelWrapper):
 
-    def __init__(self, model_name, supported_translations):
-        self.model_name = model_name
+    def __init__(self, model, tokenizer, pretrained_weights, supported_translations):
+        super().__init__(model, tokenizer, pretrained_weights)
         self.supported_translations = supported_translations
-        self.tokenizer = self.__load_tokenizer()
-        self.model = self.__load_model()
-
-    def __load_tokenizer(self):
-        return MarianTokenizer.from_pretrained(self.model_name)
-
-    def __load_model(self):
-        return MarianMTModel.from_pretrained(self.model_name)
 
     def translator(self, text):
         encoded_translation = self.model.generate(**self.tokenizer.prepare_translation_batch(text))
