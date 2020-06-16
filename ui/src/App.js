@@ -85,7 +85,7 @@ function App() {
         }).then(res => setPredictedTokens([res]))
     }
 
-    const result = (option, text) => {
+    const translate = (option, text) => {
         fetch("/translate", {
                 method: "POST",
                 cache: "no-cache",
@@ -118,7 +118,7 @@ function App() {
 
     const sendMessage = async () => {
         if (textValue !== "") {
-            await result(language, textValue)
+            await translate(language, textValue)
             await scrollToBottom()
             setTextValue("")
         }
